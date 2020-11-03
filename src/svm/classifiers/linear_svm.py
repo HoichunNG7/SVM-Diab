@@ -36,14 +36,19 @@ def linear_svm_loss_vectorized(W, X, y, reg):
   D_plus_one = np.size(W)
   temp_loss_sum = 0.0
 
-  X = np.c_[X, np.ones(N)] # add intercept
+  X = np.c_[X, np.ones(N)] # new column corresponding to intercept
  
   for i in range(N):
     cand = y[i] * np.sum(np.dot(X[i], W))
     if cand < 1:
       temp_loss_sum += 1 - cand
+      dW = dW - y[i] * X[i] / N # update gradient
+    else:
+      pass
   
   loss = temp_loss_sum / N
+
+  dW += 2 * reg * W
 
   #############################################################################
   #                             END OF YOUR CODE                              #
