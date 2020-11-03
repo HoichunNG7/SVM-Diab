@@ -25,8 +25,14 @@ class SVMClassifier(object):
     Outputs:
     A list containing the value of the loss function at each training iteration.
     """
-    loss_history = 0
+    loss_history = []
+    N = np.size(y)
+    D = X.shape[1]
 
+    if self.W is None:
+      self.W = np.random.randn(D + 1, ) * 0.0001
+
+    for i in range(num_iters):
       #########################################################################
       # TODO:                                                                 #
       # Sample batch_size elements from the training data and their           #
@@ -37,8 +43,11 @@ class SVMClassifier(object):
       # Hint: Use np.random.choice to generate indices. Sampling with         #
       # replacement is faster than sampling without replacement.              #
       #########################################################################
-   
-
+    
+      mask = np.random.choice(N, batch_size, replace=True)
+      X_batch = X[mask]
+      y_batch = y[mask]
+     
       #########################################################################
       #                       END OF YOUR CODE                                #
       #########################################################################
@@ -46,6 +55,8 @@ class SVMClassifier(object):
 
       # evaluate loss and gradient
 
+      loss, grad = linear_svm_loss_vectorized(self.W, X_batch, y_batch, reg)
+      loss_history.append(loss)
         
       # perform parameter update
       #########################################################################
@@ -53,10 +64,11 @@ class SVMClassifier(object):
       # Update the weights using the gradient and the learning rate.          #
       #########################################################################
 
+      self.W = self.W - learning_rate * grad
+
       #########################################################################
       #                       END OF YOUR CODE                                #
       #########################################################################
-
 
     return loss_history
 
@@ -73,13 +85,21 @@ class SVMClassifier(object):
       array of length N, and each element is an integer giving the predicted
       class.
     """
-    y_pred = np.zeros(X.shape[1])
+    N = X.shape[0]
+    y_pred = np.zeros(N)
     ###########################################################################
     # TODO:                                                                   #
     # Implement this method. Store the predicted labels in y_pred.            #
     ###########################################################################
 
-    
+    X = np.c_[X, np.ones(N)] # new column corresponding to intercept
+
+    for i in range(N):
+      result = np.sum(np.dot(X[i], self.W))
+      if result > 0:
+        y_pred[i] = 1
+      else:
+        y_pred[i] = -1
     
     ###########################################################################
     #                           END OF YOUR CODE                              #
