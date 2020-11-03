@@ -1,5 +1,6 @@
 import numpy as np
 from svm.classifiers.linear_svm import *
+from svm.classifiers.RBF_kernel_svm import *
 
 
 class SVMClassifier(object):
@@ -125,11 +126,7 @@ class SVMClassifier(object):
 
 
 class LinearSVM(SVMClassifier):
-  """ A subclass that uses the SVM loss function """
+  """ A subclass that uses the linear SVM loss function """
 
   def loss(self, X_batch, y_batch, reg):
     return linear_svm_loss_vectorized(self.W, X_batch, y_batch, reg)
-
-
-
-
