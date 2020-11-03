@@ -9,7 +9,7 @@ def linear_svm_loss_vectorized(W, X, y, reg):
   of N examples.
 
   Inputs:
-  - W: A numpy array of shape (D, ) containing weights.
+  - W: A numpy array of shape (D+1, ) containing weights and the intercept('b').
   - X: A numpy array of shape (N, D) containing a minibatch of data.
   - y: A numpy array of shape (N,) containing training labels.
   - reg: (float) regularization strength
@@ -31,8 +31,20 @@ def linear_svm_loss_vectorized(W, X, y, reg):
   # to reuse some of the intermediate values that you used to compute the     #
   # loss.                                                                     #
   #############################################################################
+
+  N = np.size(y)
+  D_plus_one = np.size(W)
+  temp_loss_sum = 0.0
+
+  X = np.c_[X, np.ones(N)] # add intercept
  
+  for i in range(N):
+    cand = y[i] * np.sum(np.dot(X[i], W))
+    if cand < 1:
+      temp_loss_sum += 1 - cand
   
+  loss = temp_loss_sum / N
+
   #############################################################################
   #                             END OF YOUR CODE                              #
   #############################################################################
