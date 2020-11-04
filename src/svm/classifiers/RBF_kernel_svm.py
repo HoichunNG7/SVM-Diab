@@ -4,12 +4,17 @@ from random import shuffle
 class KernelSVMClassifier(object):
 
   def __init__(self, X=None, y=None):
-    self.Alpha = None
-    self.b = None # intercept
+    self.b = 0.0 # intercept
     self.kernel_matrix = None
     self.X = X
     self.y = y
     self.sigma_square = 0.0 # bandwidth
+
+    if self.X is not None:
+      N = X.shape[0]
+      self.Alpha = np.random.randn(N, ) * 0.001
+    else:
+      self.Alpha = None
 
   def train(self, X=None, y=None, learning_rate=1e-3, C=1, num_iters=2000, verbose=False):
     if X is not None:
