@@ -40,7 +40,7 @@ def linear_svm_loss_vectorized(W, X, y, reg):
  
   for i in range(N):
     cand = y[i] * np.sum(np.dot(X[i], W))
-    if cand < 1:
+    if cand < 1: # support vectors
       temp_loss_sum += 1 - cand
       dW = dW - y[i] * X[i] / N # update gradient
     else:

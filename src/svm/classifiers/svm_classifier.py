@@ -1,6 +1,5 @@
 import numpy as np
 from svm.classifiers.linear_svm import *
-from svm.classifiers.RBF_kernel_svm import *
 
 
 class SVMClassifier(object):
