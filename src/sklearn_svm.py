@@ -2,6 +2,7 @@ from svm.classifiers.linear_svm import linear_svm_loss_vectorized
 import time
 import pandas as pd
 from sklearn import svm
+from sklearn.model_selection import GridSearchCV
 from sklearn.datasets import load_diabetes
 from sklearn import datasets
 from sklearn.model_selection import train_test_split
@@ -38,16 +39,33 @@ mask = range(num_test)
 X_test = x_test[mask]
 y_test = y_test[mask]
 
-# invoke sklearn tools
+# Invoke sklearn tools
 linear_svc = svm.SVC(kernel='linear')
-rbf_svc = svm.SVC(kernel='rbf')
+rbf_svc = svm.SVC(kernel='rbf', probability=True)
+
+# Model Selection
+param_grid = {'C': [1e-3, 1e-2, 1e-1, 1, 10, 100, 1000]}
+
+# grid_search0 = GridSearchCV(linear_svc, param_grid)
+# grid_search0.fit(X_train, y_train)
+# best_parameters0 = grid_search0.best_estimator_.get_params()    
+# print('linear hyperparameter C: ', best_parameters0['C'])
+            
+grid_search1 = GridSearchCV(rbf_svc, param_grid)
+grid_search1.fit(X_train, y_train)
+best_parameters1 = grid_search1.best_estimator_.get_params()    
+print('RBF hyperparameter C: ', best_parameters1['C'])
+
+print('\n')
 
 # Training
+linear_svc = svm.SVC(kernel='linear', C=1)
 tic0 = time.time()
 linear_svc.fit(X_train, y_train)
 toc0 = time.time()
 print('Linear svm training took %fs' % (toc0 - tic0))
 
+rbf_svc = svm.SVC(kernel='rbf', C=best_parameters1['C'], probability=True)
 tic1 = time.time()
 rbf_svc.fit(X_train, y_train)
 toc1 = time.time()
@@ -56,12 +74,16 @@ print('\n')
 
 # Evaluation
 y_train_pred = linear_svc.predict(X_train)
-print('training accuracy: %f' % (np.mean(y_train == y_train_pred), ))
+print('linear training accuracy: %f' % (np.mean(y_train == y_train_pred), ))
 y_val_pred = linear_svc.predict(X_val)
-print('validation accuracy: %f' % (np.mean(y_val == y_val_pred), ))
+print('linear validation accuracy: %f' % (np.mean(y_val == y_val_pred), ))
+y_test_pred = linear_svc.predict(X_test)
+print('linear test accuracy: %f' % (np.mean(y_test == y_test_pred), ))
 
 y_train_pred = rbf_svc.predict(X_train)
-print('training accuracy: %f' % (np.mean(y_train == y_train_pred), ))
+print('RBF training accuracy: %f' % (np.mean(y_train == y_train_pred), ))
 y_val_pred = rbf_svc.predict(X_val)
-print('validation accuracy: %f' % (np.mean(y_val == y_val_pred), ))
+print('RBF validation accuracy: %f' % (np.mean(y_val == y_val_pred), ))
+y_test_pred = rbf_svc.predict(X_test)
+print('RBF test accuracy: %f' % (np.mean(y_test == y_test_pred), ))
 print('\n')
